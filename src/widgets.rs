@@ -1,16 +1,10 @@
-use crate::app::{Event, Schema, Section as SectionInfo};
+use crate::{
+    app::{Event, Schema, Section as SectionInfo},
+    misc::keycap,
+};
 
 use gtk::prelude::*;
 use std::rc::Rc;
-
-pub fn key_label(label: &str) -> gtk::Label {
-    let label = cascade! {
-        gtk::LabelBuilder::new().label(label).build();
-        ..get_style_context().add_class("keyboard-key");
-    };
-
-    label
-}
 
 #[derive(AsRef, Deref)]
 #[as_ref]
@@ -21,7 +15,7 @@ impl Section {
     pub fn new(
         key_sg: &gtk::SizeGroup,
         section: &SectionInfo,
-        func: &Rc<dyn Fn(&gtk::EventBox, Event)>
+        func: &Rc<dyn Fn(&gtk::EventBox, Event)>,
     ) -> Self {
         let label = gtk::LabelBuilder::new()
             .label(section.header)
@@ -40,7 +34,7 @@ impl Section {
             match shortcut.schema {
                 Schema::Hardcoded(binding) => {
                     binding.iter().for_each(|binding| {
-                        keys.add(&key_label(binding));
+                        keys.add(&keycap(binding));
                     });
                 }
             }

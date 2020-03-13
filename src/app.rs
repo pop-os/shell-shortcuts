@@ -5,13 +5,6 @@ const LAPTOP_DARK: &[u8] = include_bytes!("../assets/laptop-dark.svg");
 const DISPLAY_DARK: &[u8] = include_bytes!("../assets/display-dark.svg");
 
 const CSS: &[u8] = br#"
-.keyboard-key {
-  color: #222;
-  background: #ccc;
-  padding: .25em .5em;
-  border-radius: .3em;
-  border-bottom: .2em inset #444;
-}
 "#;
 
 const COLUMNS: &[&[Section]] = &[
@@ -190,6 +183,7 @@ pub fn main(app: &gtk::Application) {
             ..set_halign(gtk::Align::Center);
             ..set_border_width(8);
             ..add(&demo_section(&laptop, display));
+            ..add(&legend());
             ..add(&shortcuts_section());
             ..add(&settings_reference());
         });
@@ -201,27 +195,38 @@ pub fn main(app: &gtk::Application) {
     }
 }
 
-fn svg_draw_area(svg: &[u8], width: i32, height: i32) -> gtk::DrawingArea {
-    let drawing_area = gtk::DrawingArea::new();
+fn legend() -> gtk::Box {
+    let arrow_keys = cascade! {
+        gtk::Box::new(gtk::Orientation::Horizontal, 24);
+        ..add(&cascade! {
+            gtk::Box::new(gtk::Orientation::Horizontal, 4);
+            ..add(&crate::misc::keycap("←"));
+            ..add(&crate::misc::keycap("↓"));
+            ..add(&crate::misc::keycap("↑"));
+            ..add(&crate::misc::keycap("→"));
+        });
+        ..add(&gtk::Label::new("- arrow keys".into()));
+    };
 
-    let opt = resvg::Options::default();
-    let tree = resvg::usvg::Tree::from_data(svg, &opt.usvg).unwrap();
+    let alt_arrow_keys = cascade! {
+        gtk::Box::new(gtk::Orientation::Horizontal, 24);
+        ..add(&cascade! {
+            gtk::Box::new(gtk::Orientation::Horizontal, 4);
+            ..add(&crate::misc::keycap("H"));
+            ..add(&crate::misc::keycap("J"));
+            ..add(&crate::misc::keycap("K"));
+            ..add(&crate::misc::keycap("L"));
+        });
+        ..add(&gtk::Label::new("- use in place of arrow keys".into()));
+    };
 
-    drawing_area.connect_draw(move |w, cr| {
-        let screen = resvg::ScreenSize::new(
-            w.get_allocated_width() as u32,
-            w.get_allocated_height() as u32,
-        )
-        .unwrap();
+    let container = cascade! {
+        gtk::Box::new(gtk::Orientation::Vertical, 8);
+        ..add(&arrow_keys);
+        ..add(&alt_arrow_keys);
+    };
 
-        resvg::backend_cairo::render_to_canvas(&tree, &opt, screen, cr);
-
-        gtk::Inhibit(false)
-    });
-
-    drawing_area.set_size_request(width, height);
-
-    drawing_area
+    container
 }
 
 fn demo_section(laptop: &gtk::DrawingArea, display: &gtk::DrawingArea) -> gtk::Box {
@@ -284,4 +289,27 @@ fn shortcuts_section() -> gtk::Box {
     }
 
     container
+}
+
+fn svg_draw_area(svg: &[u8], width: i32, height: i32) -> gtk::DrawingArea {
+    let drawing_area = gtk::DrawingArea::new();
+
+    let opt = resvg::Options::default();
+    let tree = resvg::usvg::Tree::from_data(svg, &opt.usvg).unwrap();
+
+    drawing_area.connect_draw(move |w, cr| {
+        let screen = resvg::ScreenSize::new(
+            w.get_allocated_width() as u32,
+            w.get_allocated_height() as u32,
+        )
+        .unwrap();
+
+        resvg::backend_cairo::render_to_canvas(&tree, &opt, screen, cr);
+
+        gtk::Inhibit(false)
+    });
+
+    drawing_area.set_size_request(width, height);
+
+    drawing_area
 }
