@@ -1,5 +1,8 @@
 use gtk::prelude::*;
-use std::rc::Rc;
+use std::{
+    cell::{Cell, RefCell},
+    rc::Rc,
+};
 
 const LAPTOP_DARK: &[u8] = include_bytes!("../assets/laptop-dark.svg");
 const DISPLAY_DARK: &[u8] = include_bytes!("../assets/display-dark.svg");
@@ -24,6 +27,23 @@ const COLUMNS: &[&[Section]] = &[
                 ),
             ],
         ),
+        Section::new(
+            "Move window across workspaces",
+            &[
+                Shortcut::new(
+                    "Move current window one workspace up",
+                    Event::MoveWorkspaceAbove,
+                    Schema::Hardcoded(&["Super", "Shift", "↑"]),
+                ),
+                Shortcut::new(
+                    "Move current window one workspace down",
+                    Event::MoveWorkspaceBelow,
+                    Schema::Hardcoded(&["Super", "Shift", "↓"]),
+                ),
+            ],
+        ),
+    ],
+    &[
         Section::new(
             "Navigate applications, windows, and workspaces",
             &[
@@ -56,23 +76,6 @@ const COLUMNS: &[&[Section]] = &[
                     "Switch focus to workspace below",
                     Event::SwitchFocusWorkspaceBelow,
                     Schema::Hardcoded(&["Super", "Ctrl", "↓"]),
-                ),
-            ],
-        ),
-    ],
-    &[
-        Section::new(
-            "Move window across workspaces",
-            &[
-                Shortcut::new(
-                    "Move current window one workspace up",
-                    Event::MoveWorkspaceAbove,
-                    Schema::Hardcoded(&["Super", "Shift", "↑"]),
-                ),
-                Shortcut::new(
-                    "Move current window one workspace down",
-                    Event::MoveWorkspaceBelow,
-                    Schema::Hardcoded(&["Super", "Shift", "↓"]),
                 ),
             ],
         ),
@@ -176,23 +179,52 @@ pub fn main(app: &gtk::Application) {
     let laptop = &svg_draw_area(LAPTOP_DARK, 300, 230);
     let display = &svg_draw_area(DISPLAY_DARK, 300, 300);
 
-    cascade! {
+    let shortcuts = cascade! {
+        gtk::Box::new(gtk::Orientation::Vertical, 24);
+        ..set_border_width(8);
+        ..add(&legend());
+        ..add(&shortcuts_section());
+        ..add(&settings_reference());
+    };
+
+    let scroller = cascade! {
+        gtk::ScrolledWindowBuilder::new()
+            .hscrollbar_policy(gtk::PolicyType::Never)
+            .build();
+        ..set_vexpand(true);
+        ..add(&shortcuts);
+    };
+
+    let content = cascade! {
+        gtk::Box::new(gtk::Orientation::Vertical, 24);
+        ..set_border_width(8);
+        ..add(&demo_section(&laptop, display));
+        ..add(&scroller);
+    };
+
+    let window = cascade! {
         gtk::ApplicationWindow::new(app);
-        ..add(&cascade! {
-            gtk::Box::new(gtk::Orientation::Vertical, 24);
-            ..set_halign(gtk::Align::Center);
-            ..set_border_width(8);
-            ..add(&demo_section(&laptop, display));
-            ..add(&legend());
-            ..add(&shortcuts_section());
-            ..add(&settings_reference());
-        });
+        ..add(&content);
         ..show_all();
         ..connect_delete_event(move |window, _| {
             window.destroy();
             gtk::Inhibit(false)
         });
-    }
+    };
+
+    window.connect_size_allocate(move |_, allocation| {
+        let width = (allocation.width - allocation.width.min(1000)) / 2;
+
+        eprintln!("{}", allocation.width);
+
+        content.set_margin_start(width);
+        content.set_margin_end(width);
+        shortcuts.set_halign(if width == 0 {
+            gtk::Align::Center
+        } else {
+            gtk::Align::Fill
+        });
+    });
 }
 
 fn legend() -> gtk::Box {
@@ -266,26 +298,33 @@ fn settings_reference() -> gtk::Box {
     container
 }
 
-fn shortcuts_section() -> gtk::Box {
+fn shortcuts_section() -> gtk::FlowBox {
     let key_sg = gtk::SizeGroup::new(gtk::SizeGroupMode::Horizontal);
 
-    let container = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    let container = cascade! {
+        gtk::FlowBox::new();
+        ..set_selection_mode(gtk::SelectionMode::None);
+        ..set_max_children_per_line(2);
+        ..set_row_spacing(12);
+        ..set_column_spacing(12);
+    };
 
     let event_handler: Rc<dyn Fn(&gtk::EventBox, Event)> = Rc::new(|widget, event| {
         println!("clicked {:?}", event);
     });
 
-    for column in COLUMNS {
-        let shortcuts = gtk::Box::new(gtk::Orientation::Vertical, 16);
-        container.add(&shortcuts);
-
-        for section in *column {
+    let iter = COLUMNS.iter().flat_map(|column| {
+        column.iter().map(|section| {
             let section = cascade! {
                 crate::widgets::Section::new(&key_sg, section, &event_handler);
             };
 
-            shortcuts.add(section.as_ref());
-        }
+            section
+        })
+    });
+
+    for widget in iter {
+        container.add(widget.as_ref());
     }
 
     container
