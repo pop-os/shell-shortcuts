@@ -1,0 +1,14 @@
+Source: pop-shell-shortcuts
+Section: gnome
+Priority: optional
+Maintainer: System76 <info@system76.com>
+Build-Depends: cargo, rustc, debhelper-compat (= 12), libgtk-3-dev
+Standards-Version: 3.9.8
+Homepage: https://github.com/pop-os/shell-shortcuts
+Vcs-Git: https://github.com/pop-os/shell-shortcuts
+
+Package: pop-shell-shortcuts
+Architecture: amd64
+Depends:
+    ${misc:Depends}
+Description: Pop!_OS Shell Keyboard Shortcuts
