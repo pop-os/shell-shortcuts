@@ -15,8 +15,8 @@ use gtk::prelude::*;
 const APP_ID: &str = "com.system76.ShellShortcuts";
 
 fn main() {
-    glib::set_program_name("Keyboard Shortcuts".into());
-    glib::set_application_name("Keyboard Shortcuts");
+    glib::set_program_name("Pop!_Shell Keyboard Shortcuts".into());
+    glib::set_application_name("Pop!_Shell Keyboard Shortcuts");
 
     let app_flags = gio::ApplicationFlags::empty();
 

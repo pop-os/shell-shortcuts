@@ -13,39 +13,22 @@ const CSS: &[u8] = br#"
 const COLUMNS: &[&[Section]] = &[
     &[
         Section::new(
-            "Move window across monitors",
+            "Direction keys",
             &[
                 Shortcut::new(
-                    "Move current window one monitor to the left",
-                    Event::MoveMonitorLeft,
-                    Schema::Hardcoded(&["Super", "Ctrl", "←"]),
+                    "Arrow keys",
+                    Event::ArrowKeys,
+                    Schema::Hardcoded(&["←", "↓", "↑", "→"]),
                 ),
                 Shortcut::new(
-                    "Move current window one monitor to the right",
-                    Event::MoveMonitorRight,
-                    Schema::Hardcoded(&["Super", "Ctrl", "→"]),
+                    "Vim shortcuts",
+                    Event::ArrowKeysAlt,
+                    Schema::Hardcoded(&["H", "J", "K", "L"]),
                 ),
             ],
         ),
         Section::new(
-            "Move window across workspaces",
-            &[
-                Shortcut::new(
-                    "Move current window one workspace up",
-                    Event::MoveWorkspaceAbove,
-                    Schema::Hardcoded(&["Super", "Shift", "↑"]),
-                ),
-                Shortcut::new(
-                    "Move current window one workspace down",
-                    Event::MoveWorkspaceBelow,
-                    Schema::Hardcoded(&["Super", "Shift", "↓"]),
-                ),
-            ],
-        ),
-    ],
-    &[
-        Section::new(
-            "Navigate applications, windows, and workspaces",
+            "Navigate applications and windows",
             &[
                 Shortcut::new(
                     "Launch and switch applications",
@@ -55,32 +38,12 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Switch focus between windows",
                     Event::SwitchFocus,
-                    Schema::Hardcoded(&["Super", "arrow key"]),
-                ),
-                Shortcut::new(
-                    "Switch focus to monitor left",
-                    Event::SwitchFocusMonitorLeft,
-                    Schema::Hardcoded(&["Super", "Ctrl", "←"]),
-                ),
-                Shortcut::new(
-                    "Switch focus to monitor right",
-                    Event::SwitchFocusMonitorRight,
-                    Schema::Hardcoded(&["Super", "Ctrl", "→"]),
-                ),
-                Shortcut::new(
-                    "Switch focus to workspace above",
-                    Event::SwitchFocusWorkspaceAbove,
-                    Schema::Hardcoded(&["Super", "Ctrl", "↑"]),
-                ),
-                Shortcut::new(
-                    "Switch focus to workspace below",
-                    Event::SwitchFocusWorkspaceBelow,
-                    Schema::Hardcoded(&["Super", "Ctrl", "↓"]),
+                    Schema::Hardcoded(&["Super", "Direction keys"]),
                 ),
             ],
         ),
         Section::new(
-            "Window adjustment",
+            "Move, resize and swap windows",
             &[
                 Shortcut::new(
                     "Enter adjustment mode",
@@ -90,24 +53,92 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Move window",
                     Event::MoveWindow,
-                    Schema::Hardcoded(&["arrow key"]),
+                    Schema::Hardcoded(&["Direction keys"]),
                 ),
                 Shortcut::new(
                     "Resize window",
                     Event::ResizeWindow,
-                    Schema::Hardcoded(&["Shift", "arrow key"]),
+                    Schema::Hardcoded(&["Shift", "Direction keys"]),
                 ),
                 Shortcut::new(
-                    "Snap windows",
-                    Event::SnapWindows,
-                    Schema::Hardcoded(&["Ctrl", "arrow key"]),
+                    "Swap windows",
+                    Event::SwapWindows,
+                    Schema::Hardcoded(&["Ctrl", "Direction keys"]),
                 ),
                 Shortcut::new(
                     "Apply changes",
                     Event::ApplyChanges,
                     Schema::Hardcoded(&["Enter"]),
                 ),
-                Shortcut::new("Cancel", Event::Cancel, Schema::Hardcoded(&["Esc"])),
+                Shortcut::new("Cancel", 
+                Event::Cancel, 
+                Schema::Hardcoded(&["Esc"]),
+                ),
+            ],
+        ),
+        Section::new(
+            "Workspaces",
+            &[
+                Shortcut::new(
+                    "Move current window up one workspace",
+                    Event::MoveWorkspaceAbove,
+                    Schema::Hardcoded(&["Super", "Shift", "↑"]),
+                ),
+                Shortcut::new(
+                    "Move current window down one workspace",
+                    Event::MoveWorkspaceBelow,
+                    Schema::Hardcoded(&["Super", "Shift", "↓"]),
+                ),
+                Shortcut::new(
+                    "Switch focus to the worksapce above",
+                    Event::MoveWorkspaceAbove,
+                    Schema::Hardcoded(&["Super", "Ctrl", "↑"]),
+                ),
+                Shortcut::new(
+                    "Switch focus to the workspace below",
+                    Event::MoveWorkspaceBelow,
+                    Schema::Hardcoded(&["Super", "Ctrl", "↓"]),
+                ),
+            ],
+        ),
+        Section::new(
+            "Tiling mode",
+            &[
+                Shortcut::new(
+                    "Change window orientation",
+                    Event::OrientationToggle,
+                    Schema::Hardcoded(&["Super", "O"]),
+                ),
+                Shortcut::new(
+                    "Toggle floating mode",
+                    Event::FloatingToggle,
+                    Schema::Hardcoded(&["Super", "G"]),
+                ),
+            ],
+        ),
+        Section::new(
+            "Launcher Shortcuts",
+            &[
+                Shortcut::new(
+                    "Activate Launcher",
+                    Event::Search,
+                    Schema::Hardcoded(&["Super", "/"]),
+                ),
+                Shortcut::new(
+                    "Execute a command in a terminal",
+                    Event::FloatingToggle,
+                    Schema::Hardcoded(&["t:"]),
+                ),
+                Shortcut::new(
+                    "Execute a command in sh",
+                    Event::FloatingToggle,
+                    Schema::Hardcoded(&[":"]),
+                ),
+                Shortcut::new(
+                    "Calculate an equation",
+                    Event::FloatingToggle,
+                    Schema::Hardcoded(&["="]),
+                ),
             ],
         ),
     ],
@@ -115,6 +146,8 @@ const COLUMNS: &[&[Section]] = &[
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Event {
+    ArrowKeys,
+    ArrowKeysAlt,
     MoveMonitorLeft,
     MoveMonitorRight,
     Search,
@@ -128,9 +161,11 @@ pub enum Event {
     EnterAdjustment,
     MoveWindow,
     ResizeWindow,
-    SnapWindows,
+    SwapWindows,
     ApplyChanges,
     Cancel,
+    FloatingToggle,
+    OrientationToggle,
 }
 
 pub struct Section {
@@ -182,9 +217,9 @@ pub fn main(app: &gtk::Application) {
     let shortcuts = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
         ..set_border_width(8);
-        ..add(&legend());
+        //..add(&legend());
         ..add(&shortcuts_section());
-        ..add(&settings_reference());
+        //..add(&settings_reference());
     };
 
     let scroller = cascade! {
@@ -198,7 +233,7 @@ pub fn main(app: &gtk::Application) {
     let content = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
         ..set_border_width(8);
-        ..add(&demo_section(&laptop, display));
+        //..add(&demo_section(&laptop, display));
         ..add(&scroller);
     };
 
