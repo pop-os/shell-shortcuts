@@ -116,12 +116,12 @@ const COLUMNS: &[&[Section]] = &[
                 ),
                 Shortcut::new(
                     "Close window",
-                    Event::FloatingToggle,
+                    Event::CloseWindow,
                     Schema::Hardcoded(&["Super", "Q"]),
                 ),
                 Shortcut::new(
                     "Toggle maximize",
-                    Event::FloatingToggle,
+                    Event::MaximizeToggle,
                     Schema::Hardcoded(&["Super", "M"]),
                 ),
             ],
@@ -136,17 +136,17 @@ const COLUMNS: &[&[Section]] = &[
                 ),
                 Shortcut::new(
                     "Execute a command in a terminal",
-                    Event::FloatingToggle,
+                    Event::ExecuteCommandTerminal,
                     Schema::Hardcoded(&["t:"]),
                 ),
                 Shortcut::new(
                     "Execute a command in sh",
-                    Event::FloatingToggle,
+                    Event::ExecuteCommandSh,
                     Schema::Hardcoded(&[":"]),
                 ),
                 Shortcut::new(
                     "Calculate an equation",
-                    Event::FloatingToggle,
+                    Event::Calculate,
                     Schema::Hardcoded(&["="]),
                 ),
             ],
@@ -161,6 +161,9 @@ pub enum Event {
     MoveMonitorLeft,
     MoveMonitorRight,
     Search,
+    ExecuteCommandTerminal,
+    ExecuteCommandSh,
+    Calculate,
     SwitchFocus,
     SwitchFocusMonitorLeft,
     SwitchFocusMonitorRight,
@@ -176,6 +179,8 @@ pub enum Event {
     Cancel,
     FloatingToggle,
     OrientationToggle,
+    MaximizeToggle,
+    CloseWindow,
 }
 
 pub struct Section {
