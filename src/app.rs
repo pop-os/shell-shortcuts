@@ -102,7 +102,7 @@ const COLUMNS: &[&[Section]] = &[
             ],
         ),
         Section::new(
-            "Tiling mode",
+            "Window Shortcuts",
             &[
                 Shortcut::new(
                     "Change window orientation",
@@ -113,6 +113,16 @@ const COLUMNS: &[&[Section]] = &[
                     "Toggle floating mode",
                     Event::FloatingToggle,
                     Schema::Hardcoded(&["Super", "G"]),
+                ),
+                Shortcut::new(
+                    "Close window",
+                    Event::CloseWindow,
+                    Schema::Hardcoded(&["Super", "Q"]),
+                ),
+                Shortcut::new(
+                    "Toggle maximize",
+                    Event::MaximizeToggle,
+                    Schema::Hardcoded(&["Super", "M"]),
                 ),
             ],
         ),
@@ -126,17 +136,17 @@ const COLUMNS: &[&[Section]] = &[
                 ),
                 Shortcut::new(
                     "Execute a command in a terminal",
-                    Event::FloatingToggle,
+                    Event::ExecuteCommandTerminal,
                     Schema::Hardcoded(&["t:"]),
                 ),
                 Shortcut::new(
                     "Execute a command in sh",
-                    Event::FloatingToggle,
+                    Event::ExecuteCommandSh,
                     Schema::Hardcoded(&[":"]),
                 ),
                 Shortcut::new(
                     "Calculate an equation",
-                    Event::FloatingToggle,
+                    Event::Calculate,
                     Schema::Hardcoded(&["="]),
                 ),
             ],
@@ -151,6 +161,9 @@ pub enum Event {
     MoveMonitorLeft,
     MoveMonitorRight,
     Search,
+    ExecuteCommandTerminal,
+    ExecuteCommandSh,
+    Calculate,
     SwitchFocus,
     SwitchFocusMonitorLeft,
     SwitchFocusMonitorRight,
@@ -166,6 +179,8 @@ pub enum Event {
     Cancel,
     FloatingToggle,
     OrientationToggle,
+    MaximizeToggle,
+    CloseWindow,
 }
 
 pub struct Section {
