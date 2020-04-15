@@ -102,7 +102,7 @@ const COLUMNS: &[&[Section]] = &[
             ],
         ),
         Section::new(
-            "Tiling mode",
+            "Window Shortcuts",
             &[
                 Shortcut::new(
                     "Change window orientation",
@@ -113,6 +113,16 @@ const COLUMNS: &[&[Section]] = &[
                     "Toggle floating mode",
                     Event::FloatingToggle,
                     Schema::Hardcoded(&["Super", "G"]),
+                ),
+                Shortcut::new(
+                    "Close window",
+                    Event::FloatingToggle,
+                    Schema::Hardcoded(&["Super", "Q"]),
+                ),
+                Shortcut::new(
+                    "Toggle maximize",
+                    Event::FloatingToggle,
+                    Schema::Hardcoded(&["Super", "M"]),
                 ),
             ],
         ),
