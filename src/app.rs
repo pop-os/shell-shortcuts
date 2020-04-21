@@ -252,6 +252,7 @@ pub fn main(app: &gtk::Application) {
     let window = cascade! {
         gtk::ApplicationWindow::new(app);
         ..set_size_request(600, 500);
+        ..set_icon_name("input-keyboard".into());
         ..add(&content);
         ..show_all();
         ..connect_delete_event(move |window, _| {
