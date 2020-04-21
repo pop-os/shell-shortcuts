@@ -1,8 +1,5 @@
 use gtk::prelude::*;
-use std::{
-    cell::{Cell, RefCell},
-    rc::Rc,
-};
+use std::rc::Rc;
 
 const LAPTOP_DARK: &[u8] = include_bytes!("../assets/laptop-dark.svg");
 const DISPLAY_DARK: &[u8] = include_bytes!("../assets/display-dark.svg");
@@ -70,8 +67,8 @@ const COLUMNS: &[&[Section]] = &[
                     Event::ApplyChanges,
                     Schema::Hardcoded(&["Enter"]),
                 ),
-                Shortcut::new("Cancel", 
-                Event::Cancel, 
+                Shortcut::new("Cancel",
+                Event::Cancel,
                 Schema::Hardcoded(&["Esc"]),
                 ),
             ],
@@ -254,6 +251,7 @@ pub fn main(app: &gtk::Application) {
 
     let window = cascade! {
         gtk::ApplicationWindow::new(app);
+        ..set_size_request(600, 500);
         ..add(&content);
         ..show_all();
         ..connect_delete_event(move |window, _| {
@@ -264,8 +262,6 @@ pub fn main(app: &gtk::Application) {
 
     window.connect_size_allocate(move |_, allocation| {
         let width = (allocation.width - allocation.width.min(1000)) / 2;
-
-        eprintln!("{}", allocation.width);
 
         content.set_margin_start(width);
         content.set_margin_end(width);
