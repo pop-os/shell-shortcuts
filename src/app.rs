@@ -35,7 +35,7 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Switch focus between windows",
                     Event::SwitchFocus,
-                    Schema::Hardcoded(&["Super", "Direction keys"]),
+                    Schema::Hardcoded(&["Super", "←", "↓", "↑", "→"]),
                 ),
             ],
         ),
