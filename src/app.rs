@@ -18,7 +18,7 @@ const COLUMNS: &[&[Section]] = &[
                     Schema::Hardcoded(&["←", "↓", "↑", "→"]),
                 ),
                 Shortcut::new(
-                    "Vim shortcuts",
+                    "Or Vim shortcuts",
                     Event::ArrowKeysAlt,
                     Schema::Hardcoded(&["H", "J", "K", "L"]),
                 ),
@@ -50,17 +50,22 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Move window",
                     Event::MoveWindow,
-                    Schema::Hardcoded(&["Direction keys"]),
+                    Schema::Hardcoded(&["←", "↓", "↑", "→"]),
                 ),
                 Shortcut::new(
-                    "Resize window",
-                    Event::ResizeWindow,
-                    Schema::Hardcoded(&["Shift", "Direction keys"]),
+                    "Increase Window Size",
+                    Event::ResizeWindowIncrease,
+                    Schema::Hardcoded(&["Shift", "→", "↓"]),
+                ),
+                Shortcut::new(
+                    "Decrease Window Size",
+                    Event::ResizeWindowDecrease,
+                    Schema::Hardcoded(&["Shift", "←", "↓"]),
                 ),
                 Shortcut::new(
                     "Swap windows",
                     Event::SwapWindows,
-                    Schema::Hardcoded(&["Ctrl", "Direction keys"]),
+                    Schema::Hardcoded(&["Ctrl", "←", "↓", "↑", "→"]),
                 ),
                 Shortcut::new(
                     "Apply changes",
