@@ -53,9 +53,14 @@ const COLUMNS: &[&[Section]] = &[
                     Schema::Hardcoded(&["Direction keys"]),
                 ),
                 Shortcut::new(
-                    "Resize window",
-                    Event::ResizeWindow,
-                    Schema::Hardcoded(&["Shift", "Direction keys"]),
+                    "Increase Window Size",
+                    Event::ResizeWindowIncrease,
+                    Schema::Hardcoded(&["Shift", "Direction key Right or Down"]),
+                ),
+                Shortcut::new(
+                    "Decrease Window Size",
+                    Event::ResizeWindowDecrease,
+                    Schema::Hardcoded(&["Shift", "Direction key Left or Up"]),
                 ),
                 Shortcut::new(
                     "Swap windows",
