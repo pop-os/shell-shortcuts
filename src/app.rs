@@ -60,7 +60,7 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Decrease Window Size",
                     Event::ResizeWindowDecrease,
-                    Schema::Hardcoded(&["Shift", "←", "↓"]),
+                    Schema::Hardcoded(&["Shift", "←", "↑"]),
                 ),
                 Shortcut::new(
                     "Swap windows",
