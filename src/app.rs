@@ -40,7 +40,7 @@ const COLUMNS: &[&[Section]] = &[
             ],
         ),
         Section::new(
-            "Move, resize and swap windows",
+            "Move, resize and swap windows in adjustment mode",
             &[
                 Shortcut::new(
                     "Enter adjustment mode",
