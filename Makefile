@@ -1,49 +1,54 @@
 prefix ?= /usr/local
 
-export DESKTOP_BIN=pop-shell-shortcuts
-BINARY_SRC=target/$(TARGET)/$(DESKTOP_BIN)
-BINARY_DST=$(DESTDIR)$(prefix)/bin/$(DESKTOP_BIN)
+# Files to watch for modifications
+SRC = Cargo.toml Cargo.lock $(shell find src -type f -wholename 'src/*.rs')
+
+.PHONY: all clean distclean install uninstall
+
+BIN=pop-shell-shortcuts
 
 TARGET=debug
 DEBUG ?= 0
 ifeq ($(DEBUG),0)
+	ARGS += "--release"
 	TARGET = release
-	ARGS = --release
 endif
+
+BINARY_SRC=target/$(TARGET)/$(BIN)
+BINARY_DST=$(DESTDIR)$(prefix)/bin/$(BIN)
 
 VENDORED ?= 0
 ifeq ($(VENDORED),1)
 	ARGS += "--frozen"
 endif
 
-# Files to watch for modifications
-SRC=Cargo.toml Cargo.lock $(shell find src -type f -wholename 'src/*.rs')
 
-.PHONY: all clean distclean install uninstall
-
-all: $(BINARY_SRC) $(DESKTOP)
+all: $(BINARY_SRC)
 
 clean:
 	cargo clean
 
 distclean:
-	rm -rf .cargo vendor vendor.tar
+	rm -rf .cargo vendor vendor.tar.xz
+
+run: $(BINARY_SRC)
+	$(BINARY_SRC)
+
+install: $(BINARY_SRC)
+	install -Dm755 $(BINARY_SRC) $(BINARY_DST)
+
+uninstall:
+	rm -f $(BINARY_DST)
+
+update:
+	cargo update
 
 vendor:
 	mkdir -p .cargo
 	cargo vendor | head -n -1 > .cargo/config
 	echo 'directory = "vendor"' >> .cargo/config
-	tar pcf vendor.tar vendor
+	tar pcfJ vendor.tar.xz vendor
 	rm -rf vendor
-
-run: all
-	$(BINARY_SRC)
-
-install:
-	install -Dm755 $(BINARY_SRC) $(BINARY_DST)
-
-uninstall:
-	rm $(BINARY_DST)
 
 $(BINARY_SRC): $(SRC)
 ifeq ($(VENDORED),1)
