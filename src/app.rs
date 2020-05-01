@@ -92,7 +92,7 @@ const COLUMNS: &[&[Section]] = &[
                     Schema::Hardcoded(&["Super", "Shift", "↓"]),
                 ),
                 Shortcut::new(
-                    "Switch focus to the worksapce above",
+                    "Switch focus to the workspace above",
                     Event::MoveWorkspaceAbove,
                     Schema::Hardcoded(&["Super", "Ctrl", "↑"]),
                 ),
