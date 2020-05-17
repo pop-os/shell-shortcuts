@@ -122,6 +122,11 @@ const COLUMNS: &[&[Section]] = &[
                     Schema::Hardcoded(&["Super", "Q"]),
                 ),
                 Shortcut::new(
+                    "Hide window",
+                    Event::HideWindow,
+                    Schema::Hardcoded(&["Super", ","]),
+                ),
+                Shortcut::new(
                     "Toggle maximize",
                     Event::MaximizeToggle,
                     Schema::Hardcoded(&["Super", "M"]),
@@ -184,6 +189,7 @@ pub enum Event {
     OrientationToggle,
     MaximizeToggle,
     CloseWindow,
+    HideWindow,
 }
 
 pub struct Section {
