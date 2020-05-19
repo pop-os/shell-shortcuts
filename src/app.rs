@@ -117,6 +117,11 @@ const COLUMNS: &[&[Section]] = &[
                     Schema::Hardcoded(&["Super", "G"]),
                 ),
                 Shortcut::new(
+                    "Toggle auto-tiling",
+                    Event::AutoTileToggle,
+                    Schema::Hardcoded(&["Super", "Y"]),
+                ),
+                Shortcut::new(
                     "Close window",
                     Event::CloseWindow,
                     Schema::Hardcoded(&["Super", "Q"]),
@@ -181,6 +186,7 @@ pub enum Event {
     ApplyChanges,
     Cancel,
     FloatingToggle,
+    AutoTileToggle,
     OrientationToggle,
     MaximizeToggle,
     CloseWindow,
