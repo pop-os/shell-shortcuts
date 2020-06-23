@@ -77,4 +77,3 @@ Assuming the binary has been installed in your path, run it as usual.
 ```sh
 pop-shell-shortcuts
 ```
-
