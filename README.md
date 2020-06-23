@@ -54,19 +54,19 @@ This will generate the `pop-shell-shortcuts` executable in the `target/debug` di
 Install with `make`.
 
 ```sh
-make install
+sudo make install
 ```
 
 Alternatively, the debug version can be installed.
 
 ```sh
-make install DEBUG=1
+sudo make install DEBUG=1
 ```
 
 An `uninstall` target is also provided to remove the installed application.
 
 ```sh
-make uninstall
+sudo make uninstall
 ```
 
 ## Run
@@ -77,4 +77,3 @@ Assuming the binary has been installed in your path, run it as usual.
 ```sh
 pop-shell-shortcuts
 ```
-
