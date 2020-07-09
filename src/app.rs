@@ -142,6 +142,11 @@ const COLUMNS: &[&[Section]] = &[
                     Schema::Hardcoded(&["Super", "/"]),
                 ),
                 Shortcut::new(
+                    "Scroll through the Launcher list (or use Arrow keys)",
+                    Event::ScrollLauncher,
+                    Schema::Hardcoded(&["Ctrl", "J", "K"]),
+                ),
+                Shortcut::new(
                     "Execute a command in a terminal",
                     Event::ExecuteCommandTerminal,
                     Schema::Hardcoded(&["t:"]),
@@ -168,6 +173,7 @@ pub enum Event {
     MoveMonitorLeft,
     MoveMonitorRight,
     Search,
+    ScrollLauncher,
     ExecuteCommandTerminal,
     ExecuteCommandSh,
     Calculate,
