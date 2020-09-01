@@ -1,4 +1,5 @@
 use gtk::prelude::*;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 const LAPTOP_DARK: &[u8] = include_bytes!("../assets/laptop-dark.svg");
@@ -30,7 +31,7 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Launch and switch applications",
                     Event::Search,
-                    Schema::Hardcoded(&["Super", "/"]),
+                    Schema::GSettings { schema: "org.gnome.shell.extensions.pop-shell", key: "activate-launcher" },
                 ),
                 Shortcut::new(
                     "Switch focus between windows",
@@ -45,7 +46,7 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Enter adjustment mode",
                     Event::EnterAdjustment,
-                    Schema::Hardcoded(&["Super", "Enter"]),
+                    Schema::GSettings { schema: "org.gnome.shell.extensions.pop-shell", key: "tile-enter" },
                 ),
                 Shortcut::new(
                     "Move window",
@@ -70,11 +71,11 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Apply changes",
                     Event::ApplyChanges,
-                    Schema::Hardcoded(&["Enter"]),
+                    Schema::GSettings { schema: "org.gnome.shell.extensions.pop-shell", key: "tile-accept" },
                 ),
                 Shortcut::new("Cancel",
-                Event::Cancel,
-                Schema::Hardcoded(&["Esc"]),
+                    Event::Cancel,
+                    Schema::GSettings { schema: "org.gnome.shell.extensions.pop-shell", key: "tile-reject" },
                 ),
             ],
         ),
@@ -84,22 +85,22 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Move current window up one workspace",
                     Event::MoveWorkspaceAbove,
-                    Schema::Hardcoded(&["Super", "Shift", "↑"]),
+                    Schema::GSettings { schema: "org.gnome.desktop.wm.keybindings", key: "move-to-workspace-up" },
                 ),
                 Shortcut::new(
                     "Move current window down one workspace",
                     Event::MoveWorkspaceBelow,
-                    Schema::Hardcoded(&["Super", "Shift", "↓"]),
+                    Schema::GSettings { schema: "org.gnome.desktop.wm.keybindings", key: "move-to-workspace-down" },
                 ),
                 Shortcut::new(
                     "Switch focus to the workspace above",
                     Event::MoveWorkspaceAbove,
-                    Schema::Hardcoded(&["Super", "Ctrl", "↑"]),
+                    Schema::GSettings { schema: "org.gnome.desktop.wm.keybindings", key: "switch-to-workspace-up" },
                 ),
                 Shortcut::new(
                     "Switch focus to the workspace below",
                     Event::MoveWorkspaceBelow,
-                    Schema::Hardcoded(&["Super", "Ctrl", "↓"]),
+                    Schema::GSettings { schema: "org.gnome.desktop.wm.keybindings", key: "switch-to-workspace-down" },
                 ),
             ],
         ),
@@ -109,27 +110,27 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Change window orientation",
                     Event::OrientationToggle,
-                    Schema::Hardcoded(&["Super", "O"]),
+                    Schema::GSettings { schema: "org.gnome.shell.extensions.pop-shell", key: "tile-orientation" },
                 ),
                 Shortcut::new(
                     "Toggle floating mode",
                     Event::FloatingToggle,
-                    Schema::Hardcoded(&["Super", "G"]),
+                    Schema::GSettings { schema: "org.gnome.shell.extensions.pop-shell", key: "toggle-floating" },
                 ),
                 Shortcut::new(
                     "Toggle auto-tiling",
                     Event::AutoTileToggle,
-                    Schema::Hardcoded(&["Super", "Y"]),
+                    Schema::GSettings { schema: "org.gnome.shell.extensions.pop-shell", key: "toggle-tiling" },
                 ),
                 Shortcut::new(
                     "Close window",
                     Event::CloseWindow,
-                    Schema::Hardcoded(&["Super", "Q"]),
+                    Schema::GSettings { schema: "org.gnome.desktop.wm.keybindings", key: "close" },
                 ),
                 Shortcut::new(
                     "Toggle maximize",
                     Event::MaximizeToggle,
-                    Schema::Hardcoded(&["Super", "M"]),
+                    Schema::GSettings { schema: "org.gnome.desktop.wm.keybindings", key: "toggle-maximized" },
                 ),
             ],
         ),
@@ -139,7 +140,7 @@ const COLUMNS: &[&[Section]] = &[
                 Shortcut::new(
                     "Activate Launcher",
                     Event::Search,
-                    Schema::Hardcoded(&["Super", "/"]),
+                    Schema::GSettings { schema: "org.gnome.shell.extensions.pop-shell", key: "activate-launcher" },
                 ),
                 Shortcut::new(
                     "Scroll through the Launcher list (or use Arrow keys)",
@@ -226,7 +227,7 @@ impl Shortcut {
 }
 
 pub enum Schema {
-    // GSettings { key: &'static str, from: usize },
+    GSettings { schema: &'static str, key: &'static str },
     Hardcoded(&'static [&'static str]),
 }
 
@@ -379,14 +380,13 @@ fn shortcuts_section() -> gtk::FlowBox {
         println!("clicked {:?}", event);
     });
 
-    let iter = COLUMNS.iter().flat_map(|column| {
-        column.iter().map(|section| {
-            let section = cascade! {
-                crate::widgets::Section::new(&key_sg, section, &event_handler);
-            };
+    let mut settings_map = HashMap::new();
+    let iter = COLUMNS.iter().flat_map(|i| i.iter()).map(|section| {
+        let section = cascade! {
+            crate::widgets::Section::new(&key_sg, section, &event_handler, &mut settings_map);
+        };
 
-            section
-        })
+        section
     });
 
     for widget in iter {
