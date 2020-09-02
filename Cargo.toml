@@ -17,4 +17,4 @@ enclose = "1.1.8"
 derive_more = "0.99.5"
 gdk = "0.12.1"
 pango = "0.8.0"
-resvg = { version = "0.9.0", features = ["cairo-backend"] }
+# resvg = { version = "0.9.0", features = ["cairo-backend"] }
