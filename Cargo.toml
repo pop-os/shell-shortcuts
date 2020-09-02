@@ -9,12 +9,13 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gtk = { version = "0.8.1", features = ["v3_22"] }
 cascade = "0.1.4"
-glib = "0.9.3"
-gio = "0.8.1"
-enclose = "1.1.8"
 derive_more = "0.99.5"
-gdk = "0.12.1"
-pango = "0.8.0"
+enclose = "1.1.8"
+gdk = "0.13.0"
+gio = "0.9.0"
+glib = "0.10.0"
+gtk = { version = "0.9.0", features = ["v3_22"] }
+pango = "0.9.0"
 # resvg = { version = "0.9.0", features = ["cairo-backend"] }
+
