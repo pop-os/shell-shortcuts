@@ -241,8 +241,8 @@ pub fn main(app: &gtk::Application) {
         );
     }
 
-    let laptop = &svg_draw_area(LAPTOP_DARK, 300, 230);
-    let display = &svg_draw_area(DISPLAY_DARK, 300, 300);
+    // let laptop = &svg_draw_area(LAPTOP_DARK, 300, 230);
+    // let display = &svg_draw_area(DISPLAY_DARK, 300, 300);
 
     let shortcuts = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
@@ -396,6 +396,7 @@ fn shortcuts_section() -> gtk::FlowBox {
     container
 }
 
+/*
 fn svg_draw_area(svg: &[u8], width: i32, height: i32) -> gtk::DrawingArea {
     let drawing_area = gtk::DrawingArea::new();
 
@@ -418,3 +419,4 @@ fn svg_draw_area(svg: &[u8], width: i32, height: i32) -> gtk::DrawingArea {
 
     drawing_area
 }
+*/
