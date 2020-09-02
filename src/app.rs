@@ -275,7 +275,7 @@ pub fn main(app: &gtk::Application) {
         ..add(&content);
         ..show_all();
         ..connect_delete_event(move |window, _| {
-            window.destroy();
+            window.close();
             gtk::Inhibit(false)
         });
     };
