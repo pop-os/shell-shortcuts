@@ -262,7 +262,6 @@ pub fn main(app: &gtk::Application) {
 
     let content = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
-        ..set_border_width(8);
         //..add(&demo_section(&laptop, display));
         ..add(&scroller);
     };
@@ -283,8 +282,8 @@ pub fn main(app: &gtk::Application) {
     window.connect_size_allocate(move |_, allocation| {
         let width = (allocation.width - allocation.width.min(1000)) / 2;
 
-        content.set_margin_start(width);
-        content.set_margin_end(width);
+        shortcuts.set_margin_start(width);
+        shortcuts.set_margin_end(width);
         shortcuts.set_halign(if width == 0 {
             gtk::Align::Center
         } else {
