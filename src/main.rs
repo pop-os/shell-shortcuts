@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate cascade;
-#[macro_use]
-extern crate enclose;
+// #[macro_use]
+// extern crate enclose;
 #[macro_use]
 extern crate derive_more;
 
