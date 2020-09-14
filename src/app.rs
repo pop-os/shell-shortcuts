@@ -201,7 +201,7 @@ pub enum Event {
 
 pub struct State {
     // Holds the schema settings that are to be connected later
-    pub registration: HashMap<&'static str, (gio::Settings, HashMap<&'static str, gtk::Box>)>,
+    pub registration: HashMap<&'static str, (gio::Settings, HashMap<&'static str, Vec<gtk::Box>>)>,
 }
 
 impl Default for State {
@@ -218,19 +218,23 @@ impl State {
         self.registration.entry(schema)
             .or_insert_with(|| (settings, HashMap::new()))
             .1
-            .insert(key, shortcuts);
+            .entry(key)
+            .or_insert_with(Vec::new)
+            .push(shortcuts)
     }
 
     /// Watch for changes to keys on schemas, with one signal per `gio::Settings`
     pub fn connect_schemas(&mut self) {
         for (_, (settings, keys)) in self.registration.drain() {
             settings.connect_changed(enclose!((settings) move |_, changed| {
-                if let Some(widget) = keys.get(changed) {
-                    widget.foreach(|w| widget.remove(w));
-                    for shortcut in settings.get_strv(changed) {
-                        widget.add(&gtk::ShortcutLabel::new(&shortcut));
+                if let Some(widgets) = keys.get(changed) {
+                    for widget in widgets {
+                        widget.foreach(|w| widget.remove(w));
+                        for shortcut in settings.get_strv(changed) {
+                            widget.add(&gtk::ShortcutLabel::new(&shortcut));
+                        }
+                        widget.show_all();
                     }
-                    widget.show_all();
                 }
             }));
         }
