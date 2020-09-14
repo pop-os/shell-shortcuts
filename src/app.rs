@@ -288,6 +288,8 @@ pub fn main(app: &gtk::Application) {
     let mut state = State::default();
     let shortcuts_section = shortcuts_section(&mut state);
     state.connect_schemas();
+    // let laptop = &svg_draw_area(LAPTOP_DARK, 300, 230);
+    // let display = &svg_draw_area(DISPLAY_DARK, 300, 300);
 
     let shortcuts = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
@@ -305,7 +307,7 @@ pub fn main(app: &gtk::Application) {
 
     let content = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
-        ..set_border_width(8);
+        //..add(&demo_section(&laptop, display));
         ..add(&scroller);
     };
 
@@ -325,8 +327,8 @@ pub fn main(app: &gtk::Application) {
     window.connect_size_allocate(move |_, allocation| {
         let width = (allocation.width - allocation.width.min(1000)) / 2;
 
-        content.set_margin_start(width);
-        content.set_margin_end(width);
+        shortcuts.set_margin_start(width);
+        shortcuts.set_margin_end(width);
         shortcuts.set_halign(if width == 0 {
             gtk::Align::Center
         } else {
@@ -445,3 +447,28 @@ pub fn open_schema(schema: &str) -> gio::Settings {
         gio::Settings::new(schema)
     }
 }
+
+/*
+fn svg_draw_area(svg: &[u8], width: i32, height: i32) -> gtk::DrawingArea {
+    let drawing_area = gtk::DrawingArea::new();
+
+    let opt = resvg::Options::default();
+    let tree = resvg::usvg::Tree::from_data(svg, &opt.usvg).unwrap();
+
+    drawing_area.connect_draw(move |w, cr| {
+        let screen = resvg::ScreenSize::new(
+            w.get_allocated_width() as u32,
+            w.get_allocated_height() as u32,
+        )
+        .unwrap();
+
+        resvg::backend_cairo::render_to_canvas(&tree, &opt, screen, cr);
+
+        gtk::Inhibit(false)
+    });
+
+    drawing_area.set_size_request(width, height);
+
+    drawing_area
+}
+*/
