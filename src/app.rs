@@ -1,6 +1,6 @@
+use gio::prelude::*;
 use gtk::prelude::*;
 use std::collections::HashMap;
-use std::rc::Rc;
 
 const LAPTOP_DARK: &[u8] = include_bytes!("../assets/laptop-dark.svg");
 const DISPLAY_DARK: &[u8] = include_bytes!("../assets/display-dark.svg");
@@ -199,6 +199,49 @@ pub enum Event {
     CloseWindow,
 }
 
+pub struct State {
+    // Holds the schema settings that are to be connected later
+    pub registration: HashMap<&'static str, (gio::Settings, HashMap<&'static str, Vec<gtk::Box>>)>,
+}
+
+impl Default for State {
+    fn default() -> Self {
+        Self {
+            registration: HashMap::default(),
+        }
+    }
+}
+
+impl State {
+    /// Register an intention to watch a key on a schema for changes
+    pub fn register(&mut self, schema: &'static str, settings: gio::Settings, key: &'static str, shortcuts: gtk::Box) {
+        self.registration.entry(schema)
+            .or_insert_with(|| (settings, HashMap::new()))
+            .1
+            .entry(key)
+            .or_insert_with(Vec::new)
+            .push(shortcuts)
+    }
+
+    /// Watch for changes to keys on schemas, with one signal per `gio::Settings`
+    pub fn connect_schemas(&mut self) {
+        for (_, (settings, keys)) in self.registration.drain() {
+            settings.connect_changed(enclose!((settings) move |_, changed| {
+                if let Some(widgets) = keys.get(changed) {
+                    for widget in widgets {
+                        widget.foreach(|w| widget.remove(w));
+                        for shortcut in settings.get_strv(changed) {
+                            widget.add(&gtk::ShortcutLabel::new(&shortcut));
+                        }
+                        widget.show_all();
+                    }
+                }
+            }));
+        }
+    }
+}
+
+
 pub struct Section {
     pub header: &'static str,
     pub shortcuts: &'static [Shortcut],
@@ -242,15 +285,14 @@ pub fn main(app: &gtk::Application) {
         );
     }
 
-    // let laptop = &svg_draw_area(LAPTOP_DARK, 300, 230);
-    // let display = &svg_draw_area(DISPLAY_DARK, 300, 300);
+    let mut state = State::default();
+    let shortcuts_section = shortcuts_section(&mut state);
+    state.connect_schemas();
 
     let shortcuts = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
         ..set_border_width(8);
-        //..add(&legend());
-        ..add(&shortcuts_section());
-        //..add(&settings_reference());
+        ..add(&shortcuts_section);
     };
 
     let scroller = cascade! {
@@ -264,7 +306,6 @@ pub fn main(app: &gtk::Application) {
     let content = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
         ..set_border_width(8);
-        //..add(&demo_section(&laptop, display));
         ..add(&scroller);
     };
 
@@ -365,7 +406,7 @@ fn settings_reference() -> gtk::Box {
     container
 }
 
-fn shortcuts_section() -> gtk::FlowBox {
+fn shortcuts_section(state: &mut State) -> gtk::FlowBox {
     let key_sg = gtk::SizeGroup::new(gtk::SizeGroupMode::Horizontal);
 
     let container = cascade! {
@@ -376,17 +417,9 @@ fn shortcuts_section() -> gtk::FlowBox {
         ..set_column_spacing(12);
     };
 
-    let event_handler: Rc<dyn Fn(&gtk::EventBox, Event)> = Rc::new(|widget, event| {
-        println!("clicked {:?}", event);
-    });
-
     let mut settings_map = HashMap::new();
     let iter = COLUMNS.iter().flat_map(|i| i.iter()).map(|section| {
-        let section = cascade! {
-            crate::widgets::Section::new(&key_sg, section, &event_handler, &mut settings_map);
-        };
-
-        section
+        crate::widgets::Section::new(&key_sg, section, state, &mut settings_map)
     });
 
     for widget in iter {
@@ -396,27 +429,19 @@ fn shortcuts_section() -> gtk::FlowBox {
     container
 }
 
-/*
-fn svg_draw_area(svg: &[u8], width: i32, height: i32) -> gtk::DrawingArea {
-    let drawing_area = gtk::DrawingArea::new();
-
-    let opt = resvg::Options::default();
-    let tree = resvg::usvg::Tree::from_data(svg, &opt.usvg).unwrap();
-
-    drawing_area.connect_draw(move |w, cr| {
-        let screen = resvg::ScreenSize::new(
-            w.get_allocated_width() as u32,
-            w.get_allocated_height() as u32,
+pub fn open_schema(schema: &str) -> gio::Settings {
+    if schema == "org.gnome.shell.extensions.pop-shell" {
+        let settings_schema = gio::SettingsSchemaSource::from_directory(
+        "/usr/share/gnome-shell/extensions/pop-shell@system76.com/schemas",
+        None,
+        false
+    ).unwrap().lookup(schema, false).unwrap();
+        gio::Settings::new_full::<gio::SettingsBackend>(
+            &settings_schema,
+            None,
+            None,
         )
-        .unwrap();
-
-        resvg::backend_cairo::render_to_canvas(&tree, &opt, screen, cr);
-
-        gtk::Inhibit(false)
-    });
-
-    drawing_area.set_size_request(width, height);
-
-    drawing_area
+    } else {
+        gio::Settings::new(schema)
+    }
 }
-*/
