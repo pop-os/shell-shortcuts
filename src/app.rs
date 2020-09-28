@@ -1,9 +1,6 @@
 use gtk::prelude::*;
 use std::rc::Rc;
 
-const LAPTOP_DARK: &[u8] = include_bytes!("../assets/laptop-dark.svg");
-const DISPLAY_DARK: &[u8] = include_bytes!("../assets/display-dark.svg");
-
 const CSS: &[u8] = br#"
 "#;
 
@@ -241,15 +238,10 @@ pub fn main(app: &gtk::Application) {
         );
     }
 
-    // let laptop = &svg_draw_area(LAPTOP_DARK, 300, 230);
-    // let display = &svg_draw_area(DISPLAY_DARK, 300, 300);
-
     let shortcuts = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
         ..set_border_width(8);
-        //..add(&legend());
         ..add(&shortcuts_section());
-        //..add(&settings_reference());
     };
 
     let scroller = cascade! {
@@ -262,7 +254,6 @@ pub fn main(app: &gtk::Application) {
 
     let content = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
-        //..add(&demo_section(&laptop, display));
         ..add(&scroller);
     };
 
@@ -290,77 +281,6 @@ pub fn main(app: &gtk::Application) {
             gtk::Align::Fill
         });
     });
-}
-
-fn legend() -> gtk::Box {
-    let arrow_keys = cascade! {
-        gtk::Box::new(gtk::Orientation::Horizontal, 24);
-        ..add(&cascade! {
-            gtk::Box::new(gtk::Orientation::Horizontal, 4);
-            ..add(&crate::misc::keycap("←"));
-            ..add(&crate::misc::keycap("↓"));
-            ..add(&crate::misc::keycap("↑"));
-            ..add(&crate::misc::keycap("→"));
-        });
-        ..add(&gtk::Label::new("- arrow keys".into()));
-    };
-
-    let alt_arrow_keys = cascade! {
-        gtk::Box::new(gtk::Orientation::Horizontal, 24);
-        ..add(&cascade! {
-            gtk::Box::new(gtk::Orientation::Horizontal, 4);
-            ..add(&crate::misc::keycap("H"));
-            ..add(&crate::misc::keycap("J"));
-            ..add(&crate::misc::keycap("K"));
-            ..add(&crate::misc::keycap("L"));
-        });
-        ..add(&gtk::Label::new("- use in place of arrow keys".into()));
-    };
-
-    let container = cascade! {
-        gtk::Box::new(gtk::Orientation::Vertical, 8);
-        ..add(&arrow_keys);
-        ..add(&alt_arrow_keys);
-    };
-
-    container
-}
-
-fn demo_section(laptop: &gtk::DrawingArea, display: &gtk::DrawingArea) -> gtk::Box {
-    let container = cascade! {
-        gtk::Box::new(gtk::Orientation::Horizontal, 32);
-        ..set_halign(gtk::Align::Center);
-        ..add(laptop);
-        ..add(display);
-    };
-
-    laptop.set_valign(gtk::Align::End);
-
-    container
-}
-
-fn settings_reference() -> gtk::Box {
-    use std::process::Command;
-
-    let hyperlink = cascade! {
-        gtk::LinkButton::new("Keyboard Settings");
-        ..connect_clicked(move |_| {
-            let _ = Command::new("gnome-control-center")
-                .arg("keyboard")
-                .spawn();
-        });
-    };
-
-    let container = cascade! {
-        gtk::Box::new(gtk::Orientation::Horizontal, 0);
-        ..set_halign(gtk::Align::Start);
-        ..add(&cascade! {
-            gtk::Label::new("These keyboard shortcuts can be changed in".into());
-        });
-        ..add(&hyperlink);
-    };
-
-    container
 }
 
 fn shortcuts_section() -> gtk::FlowBox {
@@ -394,28 +314,3 @@ fn shortcuts_section() -> gtk::FlowBox {
 
     container
 }
-
-/*
-fn svg_draw_area(svg: &[u8], width: i32, height: i32) -> gtk::DrawingArea {
-    let drawing_area = gtk::DrawingArea::new();
-
-    let opt = resvg::Options::default();
-    let tree = resvg::usvg::Tree::from_data(svg, &opt.usvg).unwrap();
-
-    drawing_area.connect_draw(move |w, cr| {
-        let screen = resvg::ScreenSize::new(
-            w.get_allocated_width() as u32,
-            w.get_allocated_height() as u32,
-        )
-        .unwrap();
-
-        resvg::backend_cairo::render_to_canvas(&tree, &opt, screen, cr);
-
-        gtk::Inhibit(false)
-    });
-
-    drawing_area.set_size_request(width, height);
-
-    drawing_area
-}
-*/
