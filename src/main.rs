@@ -21,14 +21,14 @@ fn main() {
     let app_flags = gio::ApplicationFlags::empty();
 
     cascade! {
-        gtk::Application::new(APP_ID.into(), app_flags).expect("GTK initialization failed");
+        gtk::Application::new(APP_ID.into(), app_flags);
         ..connect_startup(move |app| app::main(&app));
         ..connect_activate(|app| {
-            let windows = app.get_windows();
+            let windows = app.windows();
             if !windows.is_empty() {
                 windows[0].present();
             }
         });
-        ..run(&[]);
-    }
+        ..run();
+    };
 }

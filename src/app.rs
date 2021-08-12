@@ -247,15 +247,16 @@ pub enum Schema {
 }
 
 pub fn main(app: &gtk::Application) {
-    cascade! {
-        provider: gtk::CssProvider::new();
+    let provider = cascade! {
+        gtk::CssProvider::new();
         ..load_from_data(CSS).unwrap();
-        | gtk::StyleContext::add_provider_for_screen(
-            gdk::Screen::get_default().as_ref().unwrap(),
-            &provider,
-            gtk::STYLE_PROVIDER_PRIORITY_APPLICATION
-        );
-    }
+    };
+
+    gtk::StyleContext::add_provider_for_screen(
+        gdk::Screen::default().as_ref().unwrap(),
+        &provider,
+        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
 
     let shortcuts = cascade! {
         gtk::Box::new(gtk::Orientation::Vertical, 24);
