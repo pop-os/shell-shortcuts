@@ -314,7 +314,7 @@ fn shortcuts_section() -> gtk::FlowBox {
         ..set_column_spacing(12);
     };
 
-    let event_handler: Rc<dyn Fn(&gtk::EventBox, Event)> = Rc::new(|widget, event| {
+    let event_handler: Rc<dyn Fn(&gtk::EventBox, Event)> = Rc::new(|_widget, event| {
         println!("clicked {:?}", event);
     });
 
