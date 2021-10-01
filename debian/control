@@ -8,7 +8,7 @@ Homepage: https://github.com/pop-os/shell-shortcuts
 Vcs-Git: https://github.com/pop-os/shell-shortcuts
 
 Package: pop-shell-shortcuts
-Architecture: amd64
+Architecture: amd64 arm64
 Depends:
     ${misc:Depends}
 Description: Pop!_OS Shell Keyboard Shortcuts
